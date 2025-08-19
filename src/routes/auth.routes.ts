@@ -6,7 +6,10 @@ const router = express.Router();
 
 router.post('/register', register);
 router.post('/login', login);
-router.post('/api-key', verifyJWT, generateApiKey);
-router.get('/me', verifyJWT, getCurrentUser);
+
+router.use(verifyJWT);
+
+router.post('/api-key', generateApiKey);
+router.get('/me', getCurrentUser);
 
 export default router;
