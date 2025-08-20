@@ -2,10 +2,54 @@ import { ApiError } from '../utils/apiError';
 import { ApiResponse } from '../utils/apiResponse';
 import { asyncHandler } from '../utils/asyncHandler';
 
-const getAllPendingPosts = asyncHandler(async (req, res) => {});
-const approvePost = asyncHandler(async (req, res) => {});
-const rejectPost = asyncHandler(async (req, res) => {});
-const getAllPostsWithStatus = asyncHandler(async (req, res) => {});
-const promoteToAdmin = asyncHandler(async (req, res) => {});
+const getAllPendingPosts = asyncHandler(async (req, res) => {
+  // TODO: Implement logic to get all pending posts
+  // 1. This should be an admin-only route.
+  // 2. Query the database for all posts with status: 'pending'.
+  // 3. Populate author details for each post.
+  // 4. Implement pagination using query parameters (e.g., page, limit).
+  // 5. Return the list of pending posts in an ApiResponse.
+});
+const approvePost = asyncHandler(async (req, res) => {
+  // TODO: Implement logic to approve a post
+  // 1. This should be an admin-only route.
+  // 2. Get post ID from req.params.
+  // 3. Find the post by its ID.
+  // 4. If post not found or not pending, throw an ApiError.
+  // 5. Update the post's status to 'published'.
+  // 6. Save the updated post.
+  // 7. Return a success message in an ApiResponse.
+});
+const rejectPost = asyncHandler(async (req, res) => {
+  // TODO: Implement logic to reject a post
+  // 1. This should be an admin-only route.
+  // 2. Get post ID from req.params.
+  // 3. Optionally, get a rejection reason from req.body.
+  // 4. Find the post by its ID.
+  // 5. If post not found or not pending, throw an ApiError.
+  // 6. Update the post's status to 'rejected'.
+  // 7. Save the updated post.
+  // 8. (Optional) Notify the author about the rejection and the reason.
+  // 9. Return a success message in an ApiResponse.
+});
+const getAllPostsWithStatus = asyncHandler(async (req, res) => {
+  // TODO: Implement logic to get all posts with a specific status
+  // 1. This should be an admin-only route.
+  // 2. Get the desired status from req.query.
+  // 3. Validate the status value.
+  // 4. Query the database for all posts matching the status.
+  // 5. Implement pagination.
+  // 6. Return the list of posts in an ApiResponse.
+});
+const promoteToAdmin = asyncHandler(async (req, res) => {
+  // TODO: Implement logic to promote a user to admin
+  // 1. This should be a super-admin or owner-only route.
+  // 2. Get the user ID to be promoted from req.params or req.body.
+  // 3. Find the user by their ID.
+  // 4. If user not found, throw an ApiError.
+  // 5. Update the user's role to 'admin'.
+  // 6. Save the updated user.
+  // 7. Return a success message and the updated user's info (without sensitive data) in an ApiResponse.
+});
 
 export { getAllPendingPosts, approvePost, rejectPost, getAllPostsWithStatus, promoteToAdmin };
