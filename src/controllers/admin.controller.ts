@@ -32,15 +32,7 @@ const rejectPost = asyncHandler(async (req, res) => {
   // 8. (Optional) Notify the author about the rejection and the reason.
   // 9. Return a success message in an ApiResponse.
 });
-const getAllPostsWithStatus = asyncHandler(async (req, res) => {
-  // TODO: Implement logic to get all posts with a specific status
-  // 1. This should be an admin-only route.
-  // 2. Get the desired status from req.query.
-  // 3. Validate the status value.
-  // 4. Query the database for all posts matching the status.
-  // 5. Implement pagination.
-  // 6. Return the list of posts in an ApiResponse.
-});
+
 const promoteToAdmin = asyncHandler(async (req, res) => {
   // TODO: Implement logic to promote a user to admin
   // 1. This should be a super-admin or owner-only route.
@@ -52,4 +44,4 @@ const promoteToAdmin = asyncHandler(async (req, res) => {
   // 7. Return a success message and the updated user's info (without sensitive data) in an ApiResponse.
 });
 
-export { getAllPendingPosts, approvePost, rejectPost, getAllPostsWithStatus, promoteToAdmin };
+export { getAllPendingPosts, approvePost, rejectPost, promoteToAdmin };

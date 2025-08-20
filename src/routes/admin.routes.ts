@@ -3,7 +3,6 @@ import {
   getAllPendingPosts,
   approvePost,
   rejectPost,
-  getAllPostsWithStatus,
   promoteToAdmin,
 } from '../controllers/admin.controller';
 import { verifyJWT } from '../middleware/auth.middleware';
@@ -17,7 +16,6 @@ router.use(roleMiddleware('admin'));
 
 // Admin post review routes
 router.get('/posts', getAllPendingPosts);
-router.get('/posts/all', getAllPostsWithStatus); // View all posts regardless of status
 router.put('/posts/:id/approve', approvePost);
 router.put('/posts/:id/reject', rejectPost);
 

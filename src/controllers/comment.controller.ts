@@ -43,13 +43,4 @@ const deleteComment = asyncHandler(async (req, res) => {
   // 5. Return a success message in an ApiResponse.
 });
 
-const getUserComments = asyncHandler(async (req, res) => {
-  // TODO: Implement logic to get all comments by a specific user
-  // 1. Get the user ID from req.params.
-  // 2. Find all comments made by this user.
-  // 3. Populate post details (e.g., post title, slug) for each comment.
-  // 4. Implement pagination.
-  // 5. Return the list of comments in an ApiResponse.
-});
-
-export { createComment, getPostComments, updateComment, deleteComment, getUserComments };
+export { createComment, getPostComments, updateComment, deleteComment };
