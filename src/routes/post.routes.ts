@@ -1,24 +1,26 @@
-import express from 'express';
+import { Router } from 'express';
 import {
   createPost,
-  getPublishedPosts,
-  getPublishedPost,
+  getAllPublishedPosts,
+  getPostById,
   updatePost,
   deletePost,
+  getUserPosts,
+  getPostBySlug,
 } from '../controllers/post.controller';
 import { verifyJWT } from '../middleware/auth.middleware';
-import { roleMiddleware } from '../middleware/role.middleware';
 
-const router = express.Router();
+const router = Router();
 
-// Public routes
-router.get('/', getPublishedPosts);
-router.get('/:id', getPublishedPost);
+// Public routes (no authentication required for viewing published posts)
+router.get('/', getAllPublishedPosts);
+router.get('/:id', getPostById);
+router.get('/slug/:slug', getPostBySlug);
 
-router.use(verifyJWT);
-// Authenticated user routes
-router.post('/', createPost);
-router.put('/posts/:id', roleMiddleware('user'), updatePost);
-router.delete('/:id', deletePost);
+// Protected routes (require JWT only)
+router.post('/', verifyJWT, createPost);
+router.put('/:id', verifyJWT, updatePost);
+router.delete('/:id', verifyJWT, deletePost);
+router.get('/user/my-posts', verifyJWT, getUserPosts);
 
 export default router;

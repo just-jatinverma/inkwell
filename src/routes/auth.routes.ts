@@ -1,15 +1,20 @@
-import express from 'express';
-import { register, login, getCurrentUser, generateApiKey } from '../controllers/auth.controller';
+import { Router } from 'express';
+import {
+  registerUser,
+  loginUser,
+  getCurrentUser,
+  logoutUser,
+} from '../controllers/auth.controller';
 import { verifyJWT } from '../middleware/auth.middleware';
 
-const router = express.Router();
+const router = Router();
 
-router.post('/register', register);
-router.post('/login', login);
+// Public routes (no authentication required)
+router.post('/register', registerUser);
+router.post('/login', loginUser);
 
-router.use(verifyJWT);
-
-router.post('/api-key', generateApiKey);
-router.get('/me', getCurrentUser);
+// Protected routes (require JWT only)
+router.get('/me', verifyJWT, getCurrentUser);
+router.post('/logout', verifyJWT, logoutUser);
 
 export default router;
