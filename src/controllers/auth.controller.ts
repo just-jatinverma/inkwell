@@ -1,6 +1,30 @@
 import { ApiError } from '../utils/apiError';
 import { ApiResponse } from '../utils/apiResponse';
 import { asyncHandler } from '../utils/asyncHandler';
+import { User } from '../models/user.model';
+import { IUser } from '../models/user.model';
+
+const generateAccessAndRefreshTokens = async (userId: string) => {
+  try {
+    const user = (await User.findById(userId)) as IUser;
+
+    if (!user) {
+      throw new ApiError(400, 'user not found');
+    }
+
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToken();
+
+    user.refreshToken = refreshToken;
+
+    await user.save({ validateBeforeSave: false });
+
+    return { accessToken, refreshToken };
+  } catch (error) {
+    console.error(error);
+    throw new ApiError(500, 'internal server error');
+  }
+};
 
 const registerUser = asyncHandler(async (req, res) => {
   // TODO: Implement user registration
@@ -12,6 +36,26 @@ const registerUser = asyncHandler(async (req, res) => {
   // 6. Generate access and refresh tokens for the new user.
   // 7. Set the refresh token as an HTTP-only cookie.
   // 8. Return the created user object (without the password and refresh token) and the access token in an ApiResponse.
+
+  const { userName, password, email } = req.body;
+
+  if (!userName || !password || !email) {
+    throw new ApiError(400, 'all field are required');
+  }
+
+  const existingUser = await User.findOne({ $or: [{ userName }, { email }] });
+
+  if (existingUser) {
+    throw new ApiError(400, 'user already exist');
+  }
+
+  const user = await User.create({
+    userName,
+    email,
+    password,
+  });
+
+  return res.status(200).json(new ApiResponse(200, user, 'success'));
 });
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -25,6 +69,38 @@ const loginUser = asyncHandler(async (req, res) => {
   // 7. Generate new access and refresh tokens.
   // 8. Set the refresh token as an HTTP-only cookie.
   // 9. Return the logged-in user object (without sensitive data) and the access token in an ApiResponse.
+
+  const { userName, email, password } = req.body;
+  if ((!userName && !email) || !password) {
+    throw new ApiError(400, 'username/email and password are required');
+  }
+
+  const user = await User.findOne({ $or: [{ userName }, { email }] });
+
+  if (!user) {
+    throw new ApiError(404, 'user not found');
+  }
+
+  const isPasswordValid = await user.isPasswordCorrect(password);
+
+  if (!isPasswordValid) {
+    throw new ApiError(400, 'wrong password');
+  }
+
+  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id as string);
+
+  const loggedInUser = await User.findById(user._id).select('-password -refreshToken');
+
+  const options = {
+    httpOnly: true,
+    secure: false,
+  };
+
+  return res
+    .status(200)
+    .cookie('accessToken', accessToken, options)
+    .cookie('refreshToken', refreshToken, options)
+    .json(new ApiResponse(200, { user: loggedInUser, accessToken, refreshToken }, 'success'));
 });
 
 const getCurrentUser = asyncHandler(async (req, res) => {
@@ -32,6 +108,7 @@ const getCurrentUser = asyncHandler(async (req, res) => {
   // 1. This route will be protected by an authentication middleware.
   // 2. The middleware should have already attached the user object to the request (e.g., req.user).
   // 3. Simply return the user object from req.user in an ApiResponse.
+  return res.status(200).json(new ApiResponse(200, req.user, 'success'));
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
@@ -42,6 +119,24 @@ const logoutUser = asyncHandler(async (req, res) => {
   // 4. Clear the refresh token cookie from the response.
   //    - res.clearCookie('refreshToken', options);
   // 5. Return a success message in an ApiResponse.
+  if (!req.user?._id) {
+    throw new ApiError(200, 'user not loggedIn');
+  }
+
+  const userId = req.user._id;
+
+  await User.findByIdAndUpdate(userId, { $unset: { refreshToken: 1 } }, { new: true });
+
+  const options = {
+    httpOnly: true,
+    secure: false,
+  };
+
+  return res
+    .status(200)
+    .clearCookie('accessToken', options)
+    .clearCookie('refreshToken', options)
+    .json(new ApiResponse(200, {}, 'success'));
 });
 
 export { registerUser, loginUser, getCurrentUser, logoutUser };

@@ -7,7 +7,6 @@ import {
   deletePost,
   getUserPosts,
   getPostBySlug,
-  getFeaturedPosts,
 } from '../controllers/post.controller';
 import { verifyJWT } from '../middleware/auth.middleware';
 
@@ -17,7 +16,6 @@ const router = Router();
 router.get('/', getAllPublishedPosts);
 router.get('/:id', getPostById);
 router.get('/slug/:slug', getPostBySlug);
-router.get('/featured/posts', getFeaturedPosts);
 
 // Protected routes (require JWT only)
 router.post('/', verifyJWT, createPost);

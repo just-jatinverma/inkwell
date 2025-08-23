@@ -69,8 +69,6 @@ const getPostBySlug = asyncHandler(async (req, res) => {
   // 5. Return the post in an ApiResponse.
 });
 
-const getFeaturedPosts = asyncHandler(async (req, res) => {});
-
 export {
   createPost,
   getAllPublishedPosts,
@@ -79,5 +77,4 @@ export {
   deletePost,
   getUserPosts,
   getPostBySlug,
-  getFeaturedPosts,
 };
